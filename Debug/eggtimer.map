@@ -1,5 +1,5 @@
 
-Map of Debug\eggtimer.sm8 from link file Debug\eggtimer.lkf - Mon Jul 19 22:33:29 2021
+Map of Debug\eggtimer.sm8 from link file Debug\eggtimer.lkf - Fri Jul 30 18:52:58 2021
 
 
                                --------
@@ -7,7 +7,7 @@ Map of Debug\eggtimer.sm8 from link file Debug\eggtimer.lkf - Mon Jul 19 22:33:2
                                --------
 
 start 00008080 end 000080fa length   122 segment .const
-start 00008110 end 000082a0 length   400 segment .text
+start 00008110 end 00008312 length   514 segment .text
 start 00000000 end 0000000e length    14 segment .bsct, initialized
 start 00008102 end 00008110 length    14 segment .bsct, from
 start 0000000e end 00000014 length     6 segment .ubsct
@@ -16,7 +16,7 @@ start 00000014 end 00000014 length     0 segment .share
 start 00000100 end 00000100 length     0 segment .data
 start 00000100 end 00000100 length     0 segment .bss
 start 00000000 end 000001ad length   429 segment .info.
-start 00000000 end 00000440 length  1088 segment .debug
+start 00000000 end 000004b2 length  1202 segment .debug
 start 00008000 end 00008080 length   128 segment .const
 start 000080fa end 00008102 length     8 segment .init
 
@@ -32,9 +32,9 @@ start 0000000e end 0000000e length     0 section .ubsct
 start 00000000 end 00000034 length    52 section .info.
 
 Debug\main.o:
-start 00008160 end 0000829f length   319 section .text
+start 00008160 end 00008311 length   433 section .text
 start 00000000 end 0000000e length    14 section .bsct
-start 00000000 end 000002d5 length   725 section .debug
+start 00000000 end 00000347 length   839 section .debug
 start 00000034 end 0000009e length   106 section .info.
 start 00008080 end 000080fa length   122 section .const
 
@@ -47,8 +47,8 @@ start 00000011 end 00000014 length     3 section .ubsct
 start 000000cd end 000000fc length    47 section .info.
 
 Debug\stm8_interrupt_vector.o:
-start 0000829f end 000082a0 length     1 section .text
-start 000002d5 end 00000440 length   363 section .debug
+start 00008311 end 00008312 length     1 section .text
+start 00000347 end 000004b2 length   363 section .debug
 start 000000fc end 00000177 length   123 section .info.
 start 00008000 end 00008080 length   128 section .const
 
@@ -60,14 +60,15 @@ start 00008000 end 00008080 length   128 section .const
 Debug\main.o:
 _addMinute                  6   (6)
 _drawFullFace               4   (4)
-_main                  >   10   (4)
-_pin2Interrupt         >    7   (7)
+_main                  >    6   (2)
+_pin2Interrupt         >   19   (13)
 _portBInterrupt        >    5   (5)
+_subMinute                  6   (6)
 
 Debug\stm8_interrupt_vector.o:
 f_NonHandledInterrupt  >    6   (6)
 
-Stack size: 17
+Stack size: 25
 
 
                               ---------
@@ -75,19 +76,22 @@ Stack size: 17
                               ---------
    1 > __stext: (0)
 
-   2 > _main: (4)
-   3      + _addMinute: (6)
-   4      + _drawFullFace: (4)
+   2 > _main: (2)
+   3      + _drawFullFace: (4)
        
-   5 > _pin2Interrupt: (7)
+   4 > _pin2Interrupt: (13)
+   5      + _addMinute: (6)
+   6      + _subMinute: (6)
+       
+   7 > _portBInterrupt: (5)
 
-   6 > _portBInterrupt: (5)
+   8 > f_NonHandledInterrupt: (6)
 
-   7 > f_NonHandledInterrupt: (6)
+   9   _addMinute --> 5
 
-   8   _addMinute --> 3
+  10   _drawFullFace --> 3
 
-   9   _drawFullFace --> 4
+  11   _subMinute --> 6
 
 
 
@@ -111,20 +115,23 @@ __startmem              00000100   defined in command file section .bss
 __stext                 00008110   defined in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8 section .text
                                    used in Debug\stm8_interrupt_vector.o
 __vectab                00008000   defined in Debug\stm8_interrupt_vector.o section .const
-_addMinute              00008209   defined in Debug\main.o section .text
-_drawFullFace           000081be   defined in Debug\main.o section .text
+_addMinute              0000822b   defined in Debug\main.o section .text
+_drawFullFace           000081e9   defined in Debug\main.o section .text
 _exit                   0000815e   defined in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8 section .text
 _led_states             00000004   defined in Debug\main.o section .bsct, initialized
 _main                   00008160   defined in Debug\main.o section .text
                                    used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
 _minutes                00000002   defined in Debug\main.o section .bsct, initialized
-_pin2Interrupt          0000825f   defined in Debug\main.o section .text
+_pin2Interrupt          000082d6   defined in Debug\main.o section .text
                                    used in Debug\stm8_interrupt_vector.o
-_portBInterrupt         00008254   defined in Debug\main.o section .text
+_portBInterrupt         000082cd   defined in Debug\main.o section .text
                                    used in Debug\stm8_interrupt_vector.o
 _seconds                00000000   defined in Debug\main.o section .bsct, initialized
+_subMinute              00008276   defined in Debug\main.o section .text
 c_x                     0000000e   defined in (C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)xreg.o section .ubsct
                                    used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
+                                           Debug\main.o
 c_y                     00000011   defined in (C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)yreg.o section .ubsct
                                    used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
-f_NonHandledInterrupt   0000829f   defined in Debug\stm8_interrupt_vector.o section .text
+                                           Debug\main.o
+f_NonHandledInterrupt   00008311   defined in Debug\stm8_interrupt_vector.o section .text

@@ -15,6 +15,7 @@ void pin2Interrupt(void);
 
 void drawFullFace(void);
 void addMinute(void);
+void subMinute(void);
 
 
 int seconds = 0;
@@ -34,8 +35,9 @@ int led_states[LED_MATRIX_W] = {0x3f,0x3f,0x3f,0x3f,0x3f};
 
 main()
 {
-	int i;
-	sfr_CLK.CKDIVR.byte = 0; // FULL SPEED 
+	unsigned int i,j;
+	sfr_CLK.CKDIVR.byte = 0; // FULL SPEED
+	sfr_CLK.PCKENR.byte = 0b11; // enable tim2/3
 
 	// port c 0-4 should be open drain outputs (others should be pullup no interrupt)
 	sfr_PORTC.CR1.byte = 0b11100000; // open drain
@@ -56,8 +58,32 @@ main()
 	sfr_PORTA.CR1.byte = 0b11111111;
 	sfr_PORTA.CR2.byte = 0b11110111;
 	
+	
 	// timer2 gives 1pps to keep track of time
 	// later ..
+	
+	// timer3 does pwm for buzzer a couple of 100 hz to channel 2
+	sfr_PORTD.DDR.byte = 1; // port d0 is used for pwm
+	sfr_PORTD.CR1.byte = 1; // should push pull
+	sfr_PORTD.CR2.byte = 0;
+	
+	sfr_TIM3.PSCR.byte = 0; // dont divide clk
+	sfr_TIM3.CR1.CEN = 1; // start the count (or start the pwm)
+	
+	// pwm setup
+	sfr_TIM3.CCER1.CC2E = 1; // enable capture compare
+	sfr_TIM3.CCMR2_CAPTURE_CCMR2_COMPARE.OC2M = 0b111; // PWM mode 2
+	sfr_TIM3.CCMR2_CAPTURE_CCMR2_COMPARE.OC2PE = 1; 
+	// 50% duty, somewhat 4kHz
+	sfr_TIM3.CCR2H.byte = 0x2;
+	sfr_TIM3.CCR2L.byte = 0xD7;
+	sfr_TIM3.ARRH.byte = 0xF;
+	sfr_TIM3.ARRL.byte = 0xAE;
+	
+	// enable outputs
+	sfr_TIM3.BKR.MOE = 1;
+
+	sfr_TIM3.EGR.UG = 1; // send update envent
 	
 	// interrupts 
 	sfr_ITC_EXTI.CR1.P2IS = 0b10; // falling edge interrupt on pin 2
@@ -65,10 +91,6 @@ main()
 	sfr_ITC_EXTI.CONF.PBHIS = 0b1; // trigger port b interrupt from port b 4-7
 	
 	ENABLE_INTERRUPTS();
-	
-	for (i = 0; i < 30; i++) {
-		addMinute();
-	}
 	
 	while (1) {
 		drawFullFace();
@@ -82,9 +104,6 @@ void drawFullFace(void) {
 		for (i = 0; i < LED_MATRIX_W; i++) {
 			sfr_PORTB.ODR.byte = 0x80 | led_states[i];
 			sfr_PORTC.ODR.byte = ~(1 << (LED_MATRIX_W-1-i));
-			if (led_states[i] & 0x3f) {
-				break;
-			}
 		}
 	}
 	sfr_PORTC.ODR.byte = 0xff;
@@ -107,26 +126,35 @@ void addMinute(void) {
 	}
 }
 
+void subMinute(void) {
+	int last_led, led, i;
+	last_led = MINUTES_TO_LED[minutes];
+	minutes--;
+	if (minutes < 0) {
+		minutes = 0;
+	}
+	led = MINUTES_TO_LED[minutes];
+	if (led != last_led) {
+		i = LED_MATRIX_W-1;
+		while ((led_states[i] & 0x3f) == 0x3f) i--;
+		led_states[i] >>= 1;
+		led_states[i] |= 0x20;
+	}
+}
+
  @interrupt void portBInterrupt(void) {
 	sfr_ITC_EXTI.SR2.PBF = 1; // clear interrupt
-	minutes = 0;
-	seconds = 0;
+	sfr_TIM3.CR1.CEN = 0; //stop the count (or stop the pwm)
 }
 
 @interrupt void pin2Interrupt(void) {
-	int dir = sfr_PORTA.IDR.byte & PIN2;
+	int dir = sfr_PORTA.IDR.byte & PIN3;
 	if (dir) {
-		minutes++;
-		if (minutes > MINUTES_PER_HOUR) {
-			minutes = MINUTES_PER_HOUR;
-			seconds = 0;
-		}
+		addMinute();
 	} else {
-		minutes--;
-		if (minutes < 0) {
-			minutes = 0;
-			seconds = 0;
-		}
+		subMinute();
 	}
+	
+	
 	sfr_ITC_EXTI.SR1.P2F = 1; // clear interrupt
 }

@@ -85,22 +85,20 @@ $EndComp
 $Comp
 L power:GND #PWR02
 U 1 1 60746B0D
-P 1950 5250
-F 0 "#PWR02" H 1950 5000 50  0001 C CNN
-F 1 "GND" H 1955 5077 50  0000 C CNN
-F 2 "" H 1950 5250 50  0001 C CNN
-F 3 "" H 1950 5250 50  0001 C CNN
-	1    1950 5250
+P 1200 5250
+F 0 "#PWR02" H 1200 5000 50  0001 C CNN
+F 1 "GND" H 1205 5077 50  0000 C CNN
+F 2 "" H 1200 5250 50  0001 C CNN
+F 3 "" H 1200 5250 50  0001 C CNN
+	1    1200 5250
 	1    0    0    -1  
 $EndComp
-Text GLabel 2450 5150 0    50   Input ~ 0
+Text GLabel 1800 5250 0    50   Input ~ 0
 encoder_b
-Text GLabel 2450 4950 0    50   Input ~ 0
+Text GLabel 1850 4850 0    50   Input ~ 0
 encoder_a
 Wire Wire Line
-	2450 5050 1950 5050
-Wire Wire Line
-	1950 5050 1950 5250
+	1200 5050 1200 5250
 $Comp
 L Device:Buzzer BZ1
 U 1 1 6078E3A7
@@ -464,8 +462,6 @@ F 3 "~" V 3300 6410 50  0001 C CNN
 	1    3300 6350
 	1    0    0    -1  
 $EndComp
-Text GLabel 4650 700  0    50   Input ~ 0
-vbat
 Connection ~ 7900 1800
 Wire Wire Line
 	7900 1300 7900 1800
@@ -676,25 +672,6 @@ Wire Wire Line
 Connection ~ 6600 700 
 Wire Wire Line
 	6600 700  6800 700 
-$Comp
-L Device:R_Small R2
-U 1 1 60B9FE81
-P 3150 4750
-F 0 "R2" H 3209 4796 50  0000 L CNN
-F 1 "100k" H 3209 4705 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" H 3150 4750 50  0001 C CNN
-F 3 "~" H 3150 4750 50  0001 C CNN
-	1    3150 4750
-	1    0    0    -1  
-$EndComp
-Text GLabel 3150 4650 1    50   Input ~ 0
-vcc
-Wire Wire Line
-	3150 4850 3150 4950
-Wire Wire Line
-	3150 4950 3050 4950
-Text GLabel 3150 4950 2    50   Input ~ 0
-encoder_sw
 Text GLabel 5000 6400 0    50   Input ~ 0
 encoder_sw
 $Comp
@@ -1224,4 +1201,81 @@ Wire Wire Line
 	8000 1600 8300 1600
 Wire Wire Line
 	2850 3400 3150 3400
+$Comp
+L Device:C_Small C?
+U 1 1 61046CCB
+P 2000 4950
+F 0 "C?" H 2092 4996 50  0000 L CNN
+F 1 "10n" H 2092 4905 50  0000 L CNN
+F 2 "" H 2000 4950 50  0001 C CNN
+F 3 "~" H 2000 4950 50  0001 C CNN
+	1    2000 4950
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C_Small C?
+U 1 1 61057664
+P 2000 5150
+F 0 "C?" H 2092 5196 50  0000 L CNN
+F 1 "10n" H 2092 5105 50  0000 L CNN
+F 2 "" H 2000 5150 50  0001 C CNN
+F 3 "~" H 2000 5150 50  0001 C CNN
+	1    2000 5150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2000 5050 2450 5050
+Connection ~ 2000 5050
+Wire Wire Line
+	1800 5250 2000 5250
+Wire Wire Line
+	2450 5250 2450 5150
+Connection ~ 2000 5250
+Wire Wire Line
+	2000 5250 2450 5250
+Wire Wire Line
+	2450 4950 2450 4850
+Wire Wire Line
+	2450 4850 2000 4850
+Connection ~ 2000 4850
+Wire Wire Line
+	2000 4850 1850 4850
+Text GLabel 3450 4950 2    50   Input ~ 0
+encoder_sw
+Wire Wire Line
+	1200 5050 2000 5050
+$Comp
+L Device:R_Small R2
+U 1 1 6108AE34
+P 3150 4850
+F 0 "R2" H 3209 4896 50  0000 L CNN
+F 1 "100k" H 3209 4805 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" H 3150 4850 50  0001 C CNN
+F 3 "~" H 3150 4850 50  0001 C CNN
+	1    3150 4850
+	1    0    0    -1  
+$EndComp
+Text GLabel 3150 4750 1    50   Input ~ 0
+vcc
+Text GLabel 4650 700  0    50   Input ~ 0
+vcc
+$Comp
+L Device:C_Small C?
+U 1 1 61091BE0
+P 3150 5050
+F 0 "C?" H 3242 5096 50  0000 L CNN
+F 1 "10n" H 3242 5005 50  0000 L CNN
+F 2 "" H 3150 5050 50  0001 C CNN
+F 3 "~" H 3150 5050 50  0001 C CNN
+	1    3150 5050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3050 4950 3150 4950
+Connection ~ 3150 4950
+Wire Wire Line
+	3150 5150 3050 5150
+Connection ~ 3050 5150
+Wire Wire Line
+	3150 4950 3450 4950
 $EndSCHEMATC

@@ -76,252 +76,317 @@
   86  0008 003f          	dc.w	63
   87  000a 003f          	dc.w	63
   88  000c 003f          	dc.w	63
- 131                     ; 35 main()
- 131                     ; 36 {
- 133                     	switch	.text
- 134  0000               _main:
- 136  0000 89            	pushw	x
- 137       00000002      OFST:	set	2
- 140                     ; 38 	sfr_CLK.CKDIVR.byte = 0; // FULL SPEED 
- 142  0001 725f50c0      	clr	20672
- 143                     ; 41 	sfr_PORTC.CR1.byte = 0b11100000; // open drain
- 145  0005 35e0500d      	mov	20493,#224
- 146                     ; 42 	sfr_PORTC.CR2.byte = 0b00011111; // fast 
- 148  0009 351f500e      	mov	20494,#31
- 149                     ; 43 	sfr_PORTC.DDR.byte = 0b00011111; // outputs
- 151  000d 351f500c      	mov	20492,#31
- 152                     ; 44 	sfr_PORTC.ODR.byte = 0;
- 154  0011 725f500a      	clr	20490
- 155                     ; 49 	sfr_PORTB.DDR.byte = 0b10111111; // outputs
- 157  0015 35bf5007      	mov	20487,#191
- 158                     ; 50 	sfr_PORTB.CR1.byte = 0b10111111; // push pull for outputs no pullup for pb6
- 160  0019 35bf5008      	mov	20488,#191
- 161                     ; 51 	sfr_PORTB.CR2.byte = 0b01111111; // fast for outputs enable interrupt for pb6
- 163  001d 357f5009      	mov	20489,#127
- 164                     ; 52 	sfr_PORTB.ODR.byte = 0;
- 166  0021 725f5005      	clr	20485
- 167                     ; 55 	sfr_PORTA.DDR.byte = 0b11110011;
- 169  0025 35f35002      	mov	20482,#243
- 170                     ; 56 	sfr_PORTA.CR1.byte = 0b11111111;
- 172  0029 35ff5003      	mov	20483,#255
- 173                     ; 57 	sfr_PORTA.CR2.byte = 0b11110111;
- 175  002d 35f75004      	mov	20484,#247
- 176                     ; 63 	sfr_ITC_EXTI.CR1.P2IS = 0b10; // falling edge interrupt on pin 2
- 178  0031 721950a0      	bres	20640,#4
- 179  0035 721a50a0      	bset	20640,#5
- 180                     ; 64 	sfr_ITC_EXTI.CR3.PBIS = 0b10; // interrupt for port b falling edge
- 182  0039 721550a2      	bres	20642,#2
- 183  003d 721650a2      	bset	20642,#3
- 184                     ; 65 	sfr_ITC_EXTI.CONF.PBHIS = 0b1; // trigger port b interrupt from port b 4-7
- 186  0041 721250a5      	bset	20645,#1
- 187                     ; 67 	ENABLE_INTERRUPTS();
- 190  0045 9a            rim
- 192                     ; 69 	for (i = 0; i < 30; i++) {
- 194  0046 5f            	clrw	x
- 195  0047 1f01          	ldw	(OFST-1,sp),x
- 197  0049               L72:
- 198                     ; 70 		addMinute();
- 200  0049 ad5e          	call	_addMinute
- 202                     ; 69 	for (i = 0; i < 30; i++) {
- 204  004b 1e01          	ldw	x,(OFST-1,sp)
- 205  004d 1c0001        	addw	x,#1
- 206  0050 1f01          	ldw	(OFST-1,sp),x
- 210  0052 9c            	rvf
- 211  0053 1e01          	ldw	x,(OFST-1,sp)
- 212  0055 a3001e        	cpw	x,#30
- 213  0058 2fef          	jrslt	L72
- 214  005a               L53:
- 215                     ; 74 		drawFullFace();
- 217  005a ad02          	call	_drawFullFace
- 220  005c 20fc          	jra	L53
- 257                     ; 78 void drawFullFace(void) {
- 258                     	switch	.text
- 259  005e               _drawFullFace:
- 261  005e 89            	pushw	x
- 262       00000002      OFST:	set	2
- 265                     ; 81 	if (minutes || seconds) {	
- 267  005f be02          	ldw	x,_minutes
- 268  0061 2604          	jrne	L16
- 270  0063 be00          	ldw	x,_seconds
- 271  0065 273c          	jreq	L75
- 272  0067               L16:
- 273                     ; 82 		for (i = 0; i < LED_MATRIX_W; i++) {
- 275  0067 5f            	clrw	x
- 276  0068 1f01          	ldw	(OFST-1,sp),x
- 278  006a               L36:
- 279                     ; 83 			sfr_PORTB.ODR.byte = 0x80 | led_states[i];
- 281  006a 1e01          	ldw	x,(OFST-1,sp)
- 282  006c 58            	sllw	x
- 283  006d e605          	ld	a,(_led_states+1,x)
- 284  006f aa80          	or	a,#128
- 285  0071 c75005        	ld	20485,a
- 286                     ; 84 			sfr_PORTC.ODR.byte = ~(1 << (LED_MATRIX_W-1-i));
- 288  0074 a604          	ld	a,#4
- 289  0076 1002          	sub	a,(OFST+0,sp)
- 290  0078 5f            	clrw	x
- 291  0079 4d            	tnz	a
- 292  007a 2a01          	jrpl	L01
- 293  007c 53            	cplw	x
- 294  007d               L01:
- 295  007d 97            	ld	xl,a
- 296  007e a601          	ld	a,#1
- 297  0080 5d            	tnzw	x
- 298  0081 2704          	jreq	L21
- 299  0083               L41:
- 300  0083 48            	sll	a
- 301  0084 5a            	decw	x
- 302  0085 26fc          	jrne	L41
- 303  0087               L21:
- 304  0087 43            	cpl	a
- 305  0088 c7500a        	ld	20490,a
- 306                     ; 85 			if (led_states[i] & 0x3f) {
- 308  008b 1e01          	ldw	x,(OFST-1,sp)
- 309  008d 58            	sllw	x
- 310  008e e605          	ld	a,(_led_states+1,x)
- 311  0090 a53f          	bcp	a,#63
- 312  0092 260f          	jrne	L75
- 313                     ; 86 				break;
- 315                     ; 82 		for (i = 0; i < LED_MATRIX_W; i++) {
- 317  0094 1e01          	ldw	x,(OFST-1,sp)
- 318  0096 1c0001        	addw	x,#1
- 319  0099 1f01          	ldw	(OFST-1,sp),x
- 323  009b 9c            	rvf
- 324  009c 1e01          	ldw	x,(OFST-1,sp)
- 325  009e a30005        	cpw	x,#5
- 326  00a1 2fc7          	jrslt	L36
- 327  00a3               L75:
- 328                     ; 90 	sfr_PORTC.ODR.byte = 0xff;
- 330  00a3 35ff500a      	mov	20490,#255
- 331                     ; 92 }
- 334  00a7 85            	popw	x
- 335  00a8 81            	ret
- 390                     ; 94 void addMinute(void) {
- 391                     	switch	.text
- 392  00a9               _addMinute:
- 394  00a9 5204          	subw	sp,#4
- 395       00000004      OFST:	set	4
- 398                     ; 96 	last_led = MINUTES_TO_LED[minutes];
- 400  00ab be02          	ldw	x,_minutes
- 401  00ad 58            	sllw	x
- 402  00ae de0000        	ldw	x,(_MINUTES_TO_LED,x)
- 403  00b1 1f01          	ldw	(OFST-3,sp),x
- 405                     ; 97 	minutes++;
- 407  00b3 be02          	ldw	x,_minutes
- 408  00b5 1c0001        	addw	x,#1
- 409  00b8 bf02          	ldw	_minutes,x
- 410                     ; 98 	if (minutes > MINUTES_PER_HOUR) {
- 412  00ba 9c            	rvf
- 413  00bb be02          	ldw	x,_minutes
- 414  00bd a3003d        	cpw	x,#61
- 415  00c0 2f05          	jrslt	L121
- 416                     ; 99 		minutes = MINUTES_PER_HOUR;
- 418  00c2 ae003c        	ldw	x,#60
- 419  00c5 bf02          	ldw	_minutes,x
- 420  00c7               L121:
- 421                     ; 101 	led = MINUTES_TO_LED[minutes];
- 423  00c7 be02          	ldw	x,_minutes
- 424  00c9 58            	sllw	x
- 425  00ca de0000        	ldw	x,(_MINUTES_TO_LED,x)
- 426  00cd 1f03          	ldw	(OFST-1,sp),x
- 428                     ; 103 	if (led != last_led) {
- 430  00cf 1e03          	ldw	x,(OFST-1,sp)
- 431  00d1 1301          	cpw	x,(OFST-3,sp)
- 432  00d3 271c          	jreq	L321
- 433                     ; 104 		i = 0;
- 435  00d5 5f            	clrw	x
- 436  00d6 1f03          	ldw	(OFST-1,sp),x
- 439  00d8 2007          	jra	L131
- 440  00da               L521:
- 441                     ; 105 		while (!(led_states[i] & 0x3f)) i++;
- 444  00da 1e03          	ldw	x,(OFST-1,sp)
- 445  00dc 1c0001        	addw	x,#1
- 446  00df 1f03          	ldw	(OFST-1,sp),x
- 448  00e1               L131:
- 451  00e1 1e03          	ldw	x,(OFST-1,sp)
- 452  00e3 58            	sllw	x
- 453  00e4 e605          	ld	a,(_led_states+1,x)
- 454  00e6 a53f          	bcp	a,#63
- 455  00e8 27f0          	jreq	L521
- 456                     ; 106 		led_states[i] <<= 1;
- 458  00ea 1e03          	ldw	x,(OFST-1,sp)
- 459  00ec 58            	sllw	x
- 460  00ed 6805          	sll	(_led_states+1,x)
- 461  00ef 6904          	rlc	(_led_states,x)
- 462  00f1               L321:
- 463                     ; 108 }
- 466  00f1 5b04          	addw	sp,#4
- 467  00f3 81            	ret
- 492                     ; 110  @interrupt void portBInterrupt(void) {
- 493                     	switch	.text
- 494  00f4               _portBInterrupt:
- 498                     ; 111 	sfr_ITC_EXTI.SR2.PBF = 1; // clear interrupt
- 500  00f4 721050a4      	bset	20644,#0
- 501                     ; 112 	minutes = 0;
- 503  00f8 5f            	clrw	x
- 504  00f9 bf02          	ldw	_minutes,x
- 505                     ; 113 	seconds = 0;
- 507  00fb 5f            	clrw	x
- 508  00fc bf00          	ldw	_seconds,x
- 509                     ; 114 }
- 512  00fe 80            	iret
- 548                     ; 116 @interrupt void pin2Interrupt(void) {
- 549                     	switch	.text
- 550  00ff               _pin2Interrupt:
- 552       00000002      OFST:	set	2
- 553  00ff 89            	pushw	x
- 556                     ; 117 	int dir = sfr_PORTA.IDR.byte & PIN2;
- 558  0100 c65001        	ld	a,20481
- 559  0103 a404          	and	a,#4
- 560  0105 5f            	clrw	x
- 561  0106 97            	ld	xl,a
- 562  0107 1f01          	ldw	(OFST-1,sp),x
- 564                     ; 118 	if (dir) {
- 566  0109 1e01          	ldw	x,(OFST-1,sp)
- 567  010b 2719          	jreq	L361
- 568                     ; 119 		minutes++;
- 570  010d be02          	ldw	x,_minutes
- 571  010f 1c0001        	addw	x,#1
- 572  0112 bf02          	ldw	_minutes,x
- 573                     ; 120 		if (minutes > MINUTES_PER_HOUR) {
- 575  0114 9c            	rvf
- 576  0115 be02          	ldw	x,_minutes
- 577  0117 a3003d        	cpw	x,#61
- 578  011a 2f1c          	jrslt	L761
- 579                     ; 121 			minutes = MINUTES_PER_HOUR;
- 581  011c ae003c        	ldw	x,#60
- 582  011f bf02          	ldw	_minutes,x
- 583                     ; 122 			seconds = 0;
- 585  0121 5f            	clrw	x
- 586  0122 bf00          	ldw	_seconds,x
- 587  0124 2012          	jra	L761
- 588  0126               L361:
- 589                     ; 125 		minutes--;
- 591  0126 be02          	ldw	x,_minutes
- 592  0128 1d0001        	subw	x,#1
- 593  012b bf02          	ldw	_minutes,x
- 594                     ; 126 		if (minutes < 0) {
- 596  012d 9c            	rvf
- 597  012e be02          	ldw	x,_minutes
- 598  0130 2e06          	jrsge	L761
- 599                     ; 127 			minutes = 0;
- 601  0132 5f            	clrw	x
- 602  0133 bf02          	ldw	_minutes,x
- 603                     ; 128 			seconds = 0;
- 605  0135 5f            	clrw	x
- 606  0136 bf00          	ldw	_seconds,x
- 607  0138               L761:
- 608                     ; 131 	sfr_ITC_EXTI.SR1.P2F = 1; // clear interrupt
- 610  0138 721450a3      	bset	20643,#2
- 611                     ; 132 }
- 614  013c 5b02          	addw	sp,#2
- 615  013e 80            	iret
- 668                     	xdef	_main
- 669                     	xdef	_led_states
- 670                     	xdef	_MINUTES_TO_LED
- 671                     	xdef	_minutes
- 672                     	xdef	_seconds
- 673                     	xdef	_addMinute
- 674                     	xdef	_drawFullFace
- 675                     	xdef	_pin2Interrupt
- 676                     	xdef	_portBInterrupt
- 695                     	end
+ 119                     ; 36 main()
+ 119                     ; 37 {
+ 121                     	switch	.text
+ 122  0000               _main:
+ 126                     ; 39 	sfr_CLK.CKDIVR.byte = 0; // FULL SPEED
+ 128  0000 725f50c0      	clr	20672
+ 129                     ; 40 	sfr_CLK.PCKENR.byte = 0b11; // enable tim2/3
+ 131  0004 350350c3      	mov	20675,#3
+ 132                     ; 43 	sfr_PORTC.CR1.byte = 0b11100000; // open drain
+ 134  0008 35e0500d      	mov	20493,#224
+ 135                     ; 44 	sfr_PORTC.CR2.byte = 0b00011111; // fast 
+ 137  000c 351f500e      	mov	20494,#31
+ 138                     ; 45 	sfr_PORTC.DDR.byte = 0b00011111; // outputs
+ 140  0010 351f500c      	mov	20492,#31
+ 141                     ; 46 	sfr_PORTC.ODR.byte = 0;
+ 143  0014 725f500a      	clr	20490
+ 144                     ; 51 	sfr_PORTB.DDR.byte = 0b10111111; // outputs
+ 146  0018 35bf5007      	mov	20487,#191
+ 147                     ; 52 	sfr_PORTB.CR1.byte = 0b10111111; // push pull for outputs no pullup for pb6
+ 149  001c 35bf5008      	mov	20488,#191
+ 150                     ; 53 	sfr_PORTB.CR2.byte = 0b01111111; // fast for outputs enable interrupt for pb6
+ 152  0020 357f5009      	mov	20489,#127
+ 153                     ; 54 	sfr_PORTB.ODR.byte = 0;
+ 155  0024 725f5005      	clr	20485
+ 156                     ; 57 	sfr_PORTA.DDR.byte = 0b11110011;
+ 158  0028 35f35002      	mov	20482,#243
+ 159                     ; 58 	sfr_PORTA.CR1.byte = 0b11111111;
+ 161  002c 35ff5003      	mov	20483,#255
+ 162                     ; 59 	sfr_PORTA.CR2.byte = 0b11110111;
+ 164  0030 35f75004      	mov	20484,#247
+ 165                     ; 66 	sfr_PORTD.DDR.byte = 1; // port d0 is used for pwm
+ 167  0034 35015011      	mov	20497,#1
+ 168                     ; 67 	sfr_PORTD.CR1.byte = 1; // should push pull
+ 170  0038 35015012      	mov	20498,#1
+ 171                     ; 68 	sfr_PORTD.CR2.byte = 0;
+ 173  003c 725f5013      	clr	20499
+ 174                     ; 70 	sfr_TIM3.PSCR.byte = 0; // dont divide clk
+ 176  0040 725f528d      	clr	21133
+ 177                     ; 71 	sfr_TIM3.CR1.CEN = 1; // start the count (or start the pwm)
+ 179  0044 72105280      	bset	21120,#0
+ 180                     ; 74 	sfr_TIM3.CCER1.CC2E = 1; // enable capture compare
+ 182  0048 7218528a      	bset	21130,#4
+ 183                     ; 75 	sfr_TIM3.CCMR2_CAPTURE_CCMR2_COMPARE.OC2M = 0b111; // PWM mode 2
+ 185  004c c65289        	ld	a,21129
+ 186  004f aa70          	or	a,#112
+ 187  0051 c75289        	ld	21129,a
+ 188                     ; 76 	sfr_TIM3.CCMR2_CAPTURE_CCMR2_COMPARE.OC2PE = 1; 
+ 190  0054 72165289      	bset	21129,#3
+ 191                     ; 78 	sfr_TIM3.CCR2H.byte = 0x2;
+ 193  0058 35025292      	mov	21138,#2
+ 194                     ; 79 	sfr_TIM3.CCR2L.byte = 0xD7;
+ 196  005c 35d75293      	mov	21139,#215
+ 197                     ; 80 	sfr_TIM3.ARRH.byte = 0xF;
+ 199  0060 350f528e      	mov	21134,#15
+ 200                     ; 81 	sfr_TIM3.ARRL.byte = 0xAE;
+ 202  0064 35ae528f      	mov	21135,#174
+ 203                     ; 84 	sfr_TIM3.BKR.MOE = 1;
+ 205  0068 721e5294      	bset	21140,#7
+ 206                     ; 86 	sfr_TIM3.EGR.UG = 1; // send update envent
+ 208  006c 72105287      	bset	21127,#0
+ 209                     ; 89 	sfr_ITC_EXTI.CR1.P2IS = 0b10; // falling edge interrupt on pin 2
+ 211  0070 721950a0      	bres	20640,#4
+ 212  0074 721a50a0      	bset	20640,#5
+ 213                     ; 90 	sfr_ITC_EXTI.CR3.PBIS = 0b10; // interrupt for port b falling edge
+ 215  0078 721550a2      	bres	20642,#2
+ 216  007c 721650a2      	bset	20642,#3
+ 217                     ; 91 	sfr_ITC_EXTI.CONF.PBHIS = 0b1; // trigger port b interrupt from port b 4-7
+ 219  0080 721250a5      	bset	20645,#1
+ 220                     ; 93 	ENABLE_INTERRUPTS();
+ 223  0084 9a            rim
+ 225  0085               L12:
+ 226                     ; 96 		drawFullFace();
+ 228  0085 ad02          	call	_drawFullFace
+ 231  0087 20fc          	jra	L12
+ 268                     ; 100 void drawFullFace(void) {
+ 269                     	switch	.text
+ 270  0089               _drawFullFace:
+ 272  0089 89            	pushw	x
+ 273       00000002      OFST:	set	2
+ 276                     ; 103 	if (minutes || seconds) {	
+ 278  008a be02          	ldw	x,_minutes
+ 279  008c 2604          	jrne	L54
+ 281  008e be00          	ldw	x,_seconds
+ 282  0090 2733          	jreq	L34
+ 283  0092               L54:
+ 284                     ; 104 		for (i = 0; i < LED_MATRIX_W; i++) {
+ 286  0092 5f            	clrw	x
+ 287  0093 1f01          	ldw	(OFST-1,sp),x
+ 289  0095               L74:
+ 290                     ; 105 			sfr_PORTB.ODR.byte = 0x80 | led_states[i];
+ 292  0095 1e01          	ldw	x,(OFST-1,sp)
+ 293  0097 58            	sllw	x
+ 294  0098 e605          	ld	a,(_led_states+1,x)
+ 295  009a aa80          	or	a,#128
+ 296  009c c75005        	ld	20485,a
+ 297                     ; 106 			sfr_PORTC.ODR.byte = ~(1 << (LED_MATRIX_W-1-i));
+ 299  009f a604          	ld	a,#4
+ 300  00a1 1002          	sub	a,(OFST+0,sp)
+ 301  00a3 5f            	clrw	x
+ 302  00a4 4d            	tnz	a
+ 303  00a5 2a01          	jrpl	L01
+ 304  00a7 53            	cplw	x
+ 305  00a8               L01:
+ 306  00a8 97            	ld	xl,a
+ 307  00a9 a601          	ld	a,#1
+ 308  00ab 5d            	tnzw	x
+ 309  00ac 2704          	jreq	L21
+ 310  00ae               L41:
+ 311  00ae 48            	sll	a
+ 312  00af 5a            	decw	x
+ 313  00b0 26fc          	jrne	L41
+ 314  00b2               L21:
+ 315  00b2 43            	cpl	a
+ 316  00b3 c7500a        	ld	20490,a
+ 317                     ; 104 		for (i = 0; i < LED_MATRIX_W; i++) {
+ 319  00b6 1e01          	ldw	x,(OFST-1,sp)
+ 320  00b8 1c0001        	addw	x,#1
+ 321  00bb 1f01          	ldw	(OFST-1,sp),x
+ 325  00bd 9c            	rvf
+ 326  00be 1e01          	ldw	x,(OFST-1,sp)
+ 327  00c0 a30005        	cpw	x,#5
+ 328  00c3 2fd0          	jrslt	L74
+ 329  00c5               L34:
+ 330                     ; 109 	sfr_PORTC.ODR.byte = 0xff;
+ 332  00c5 35ff500a      	mov	20490,#255
+ 333                     ; 111 }
+ 336  00c9 85            	popw	x
+ 337  00ca 81            	ret
+ 392                     ; 113 void addMinute(void) {
+ 393                     	switch	.text
+ 394  00cb               _addMinute:
+ 396  00cb 5204          	subw	sp,#4
+ 397       00000004      OFST:	set	4
+ 400                     ; 115 	last_led = MINUTES_TO_LED[minutes];
+ 402  00cd be02          	ldw	x,_minutes
+ 403  00cf 58            	sllw	x
+ 404  00d0 de0000        	ldw	x,(_MINUTES_TO_LED,x)
+ 405  00d3 1f01          	ldw	(OFST-3,sp),x
+ 407                     ; 116 	minutes++;
+ 409  00d5 be02          	ldw	x,_minutes
+ 410  00d7 1c0001        	addw	x,#1
+ 411  00da bf02          	ldw	_minutes,x
+ 412                     ; 117 	if (minutes > MINUTES_PER_HOUR) {
+ 414  00dc 9c            	rvf
+ 415  00dd be02          	ldw	x,_minutes
+ 416  00df a3003d        	cpw	x,#61
+ 417  00e2 2f05          	jrslt	L301
+ 418                     ; 118 		minutes = MINUTES_PER_HOUR;
+ 420  00e4 ae003c        	ldw	x,#60
+ 421  00e7 bf02          	ldw	_minutes,x
+ 422  00e9               L301:
+ 423                     ; 120 	led = MINUTES_TO_LED[minutes];
+ 425  00e9 be02          	ldw	x,_minutes
+ 426  00eb 58            	sllw	x
+ 427  00ec de0000        	ldw	x,(_MINUTES_TO_LED,x)
+ 428  00ef 1f03          	ldw	(OFST-1,sp),x
+ 430                     ; 122 	if (led != last_led) {
+ 432  00f1 1e03          	ldw	x,(OFST-1,sp)
+ 433  00f3 1301          	cpw	x,(OFST-3,sp)
+ 434  00f5 271c          	jreq	L501
+ 435                     ; 123 		i = 0;
+ 437  00f7 5f            	clrw	x
+ 438  00f8 1f03          	ldw	(OFST-1,sp),x
+ 441  00fa 2007          	jra	L311
+ 442  00fc               L701:
+ 443                     ; 124 		while (!(led_states[i] & 0x3f)) i++;
+ 446  00fc 1e03          	ldw	x,(OFST-1,sp)
+ 447  00fe 1c0001        	addw	x,#1
+ 448  0101 1f03          	ldw	(OFST-1,sp),x
+ 450  0103               L311:
+ 453  0103 1e03          	ldw	x,(OFST-1,sp)
+ 454  0105 58            	sllw	x
+ 455  0106 e605          	ld	a,(_led_states+1,x)
+ 456  0108 a53f          	bcp	a,#63
+ 457  010a 27f0          	jreq	L701
+ 458                     ; 125 		led_states[i] <<= 1;
+ 460  010c 1e03          	ldw	x,(OFST-1,sp)
+ 461  010e 58            	sllw	x
+ 462  010f 6805          	sll	(_led_states+1,x)
+ 463  0111 6904          	rlc	(_led_states,x)
+ 464  0113               L501:
+ 465                     ; 127 }
+ 468  0113 5b04          	addw	sp,#4
+ 469  0115 81            	ret
+ 524                     ; 129 void subMinute(void) {
+ 525                     	switch	.text
+ 526  0116               _subMinute:
+ 528  0116 5204          	subw	sp,#4
+ 529       00000004      OFST:	set	4
+ 532                     ; 131 	last_led = MINUTES_TO_LED[minutes];
+ 534  0118 be02          	ldw	x,_minutes
+ 535  011a 58            	sllw	x
+ 536  011b de0000        	ldw	x,(_MINUTES_TO_LED,x)
+ 537  011e 1f01          	ldw	(OFST-3,sp),x
+ 539                     ; 132 	minutes--;
+ 541  0120 be02          	ldw	x,_minutes
+ 542  0122 1d0001        	subw	x,#1
+ 543  0125 bf02          	ldw	_minutes,x
+ 544                     ; 133 	if (minutes < 0) {
+ 546  0127 9c            	rvf
+ 547  0128 be02          	ldw	x,_minutes
+ 548  012a 2e03          	jrsge	L541
+ 549                     ; 134 		minutes = 0;
+ 551  012c 5f            	clrw	x
+ 552  012d bf02          	ldw	_minutes,x
+ 553  012f               L541:
+ 554                     ; 136 	led = MINUTES_TO_LED[minutes];
+ 556  012f be02          	ldw	x,_minutes
+ 557  0131 58            	sllw	x
+ 558  0132 de0000        	ldw	x,(_MINUTES_TO_LED,x)
+ 559  0135 1f03          	ldw	(OFST-1,sp),x
+ 561                     ; 137 	if (led != last_led) {
+ 563  0137 1e03          	ldw	x,(OFST-1,sp)
+ 564  0139 1301          	cpw	x,(OFST-3,sp)
+ 565  013b 272d          	jreq	L741
+ 566                     ; 138 		i = LED_MATRIX_W-1;
+ 568  013d ae0004        	ldw	x,#4
+ 569  0140 1f03          	ldw	(OFST-1,sp),x
+ 572  0142 2007          	jra	L551
+ 573  0144               L151:
+ 574                     ; 139 		while ((led_states[i] & 0x3f) == 0x3f) i--;
+ 577  0144 1e03          	ldw	x,(OFST-1,sp)
+ 578  0146 1d0001        	subw	x,#1
+ 579  0149 1f03          	ldw	(OFST-1,sp),x
+ 581  014b               L551:
+ 584  014b 1e03          	ldw	x,(OFST-1,sp)
+ 585  014d 58            	sllw	x
+ 586  014e ee04          	ldw	x,(_led_states,x)
+ 587  0150 01            	rrwa	x,a
+ 588  0151 a43f          	and	a,#63
+ 589  0153 5f            	clrw	x
+ 590  0154 02            	rlwa	x,a
+ 591  0155 a3003f        	cpw	x,#63
+ 592  0158 27ea          	jreq	L151
+ 593                     ; 140 		led_states[i] >>= 1;
+ 595  015a 1e03          	ldw	x,(OFST-1,sp)
+ 596  015c 58            	sllw	x
+ 597  015d 6704          	sra	(_led_states,x)
+ 598  015f 6605          	rrc	(_led_states+1,x)
+ 599                     ; 141 		led_states[i] |= 0x20;
+ 601  0161 1e03          	ldw	x,(OFST-1,sp)
+ 602  0163 58            	sllw	x
+ 603  0164 e605          	ld	a,(_led_states+1,x)
+ 604  0166 aa20          	or	a,#32
+ 605  0168 e705          	ld	(_led_states+1,x),a
+ 606  016a               L741:
+ 607                     ; 143 }
+ 610  016a 5b04          	addw	sp,#4
+ 611  016c 81            	ret
+ 634                     ; 145  @interrupt void portBInterrupt(void) {
+ 635                     	switch	.text
+ 636  016d               _portBInterrupt:
+ 640                     ; 146 	sfr_ITC_EXTI.SR2.PBF = 1; // clear interrupt
+ 642  016d 721050a4      	bset	20644,#0
+ 643                     ; 147 	sfr_TIM3.CR1.CEN = 0; //stop the count (or start the pwm)
+ 645  0171 72115280      	bres	21120,#0
+ 646                     ; 148 }
+ 649  0175 80            	iret
+ 685                     ; 150 @interrupt void pin2Interrupt(void) {
+ 686                     	switch	.text
+ 687  0176               _pin2Interrupt:
+ 689  0176 8a            	push	cc
+ 690  0177 84            	pop	a
+ 691  0178 a4bf          	and	a,#191
+ 692  017a 88            	push	a
+ 693  017b 86            	pop	cc
+ 694       00000002      OFST:	set	2
+ 695  017c 3b0002        	push	c_x+2
+ 696  017f be00          	ldw	x,c_x
+ 697  0181 89            	pushw	x
+ 698  0182 3b0002        	push	c_y+2
+ 699  0185 be00          	ldw	x,c_y
+ 700  0187 89            	pushw	x
+ 701  0188 89            	pushw	x
+ 704                     ; 151 	int dir = sfr_PORTA.IDR.byte & PIN3;
+ 706  0189 c65001        	ld	a,20481
+ 707  018c a408          	and	a,#8
+ 708  018e 5f            	clrw	x
+ 709  018f 97            	ld	xl,a
+ 710  0190 1f01          	ldw	(OFST-1,sp),x
+ 712                     ; 152 	if (dir) {
+ 714  0192 1e01          	ldw	x,(OFST-1,sp)
+ 715  0194 2705          	jreq	L702
+ 716                     ; 153 		addMinute();
+ 718  0196 cd00cb        	call	_addMinute
+ 721  0199 2003          	jra	L112
+ 722  019b               L702:
+ 723                     ; 155 		subMinute();
+ 725  019b cd0116        	call	_subMinute
+ 727  019e               L112:
+ 728                     ; 159 	sfr_ITC_EXTI.SR1.P2F = 1; // clear interrupt
+ 730  019e 721450a3      	bset	20643,#2
+ 731                     ; 160 }
+ 734  01a2 5b02          	addw	sp,#2
+ 735  01a4 85            	popw	x
+ 736  01a5 bf00          	ldw	c_y,x
+ 737  01a7 320002        	pop	c_y+2
+ 738  01aa 85            	popw	x
+ 739  01ab bf00          	ldw	c_x,x
+ 740  01ad 320002        	pop	c_x+2
+ 741  01b0 80            	iret
+ 794                     	xdef	_main
+ 795                     	xdef	_led_states
+ 796                     	xdef	_MINUTES_TO_LED
+ 797                     	xdef	_minutes
+ 798                     	xdef	_seconds
+ 799                     	xdef	_subMinute
+ 800                     	xdef	_addMinute
+ 801                     	xdef	_drawFullFace
+ 802                     	xdef	_pin2Interrupt
+ 803                     	xdef	_portBInterrupt
+ 804                     	xref.b	c_x
+ 805                     	xref.b	c_y
+ 824                     	end
