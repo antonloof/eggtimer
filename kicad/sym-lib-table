@@ -1,3 +1,0 @@
-(sym_lib_table
-  (lib (name stm8l_test-rescue)(type Legacy)(uri ${KIPRJMOD}/stm8l_test-rescue.lib)(options "")(descr ""))
-)
