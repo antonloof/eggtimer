@@ -217,10 +217,8 @@ F 3 "~" H 6850 4800 50  0001 C CNN
 	1    6850 4800
 	-1   0    0    1   
 $EndComp
-Text GLabel 6800 4600 0    50   Input ~ 0
+Text GLabel 6850 4600 1    50   Input ~ 0
 vcc
-Wire Wire Line
-	6800 4600 6850 4600
 Wire Wire Line
 	6850 4600 6850 4700
 Wire Wire Line
@@ -1362,15 +1360,15 @@ Wire Wire Line
 	1850 4000 1850 4650
 Text GLabel 10200 5850 2    50   Input ~ 0
 led_a5
-Text GLabel 10200 5750 2    50   Input ~ 0
+Text GLabel 10200 5350 2    50   Input ~ 0
 led_a4
-Text GLabel 10200 5650 2    50   Input ~ 0
+Text GLabel 10200 5450 2    50   Input ~ 0
 led_a3
 Text GLabel 10200 5550 2    50   Input ~ 0
 led_a2
-Text GLabel 10200 5450 2    50   Input ~ 0
+Text GLabel 10200 5650 2    50   Input ~ 0
 led_a1
-Text GLabel 10200 5350 2    50   Input ~ 0
+Text GLabel 10200 5750 2    50   Input ~ 0
 led_a0
 NoConn ~ 10200 5250
 Text GLabel 10200 5150 2    50   Input ~ 0
@@ -1459,7 +1457,7 @@ vcc
 Wire Wire Line
 	7550 2600 7800 2600
 Connection ~ 7800 2600
-Text GLabel 6150 4950 3    50   Input ~ 0
+Text GLabel 3550 4950 3    50   Input ~ 0
 led_c5
 $Comp
 L Device:R_Small R8
@@ -1477,7 +1475,7 @@ Wire Wire Line
 Wire Wire Line
 	6150 4700 6150 4650
 Connection ~ 6150 4650
-Text GLabel 5250 4950 3    50   Input ~ 0
+Text GLabel 2700 4950 3    50   Input ~ 0
 led_c4
 $Comp
 L Device:R_Small R7
@@ -1494,7 +1492,7 @@ Wire Wire Line
 	5250 4950 5250 4900
 Wire Wire Line
 	5250 4700 5250 4650
-Text GLabel 4450 4950 3    50   Input ~ 0
+Text GLabel 1850 4950 3    50   Input ~ 0
 led_c3
 $Comp
 L Device:R_Small R6
@@ -1511,7 +1509,7 @@ Wire Wire Line
 	4450 4950 4450 4900
 Wire Wire Line
 	4450 4700 4450 4650
-Text GLabel 3550 4950 3    50   Input ~ 0
+Text GLabel 6150 4950 3    50   Input ~ 0
 led_c2
 $Comp
 L Device:R_Small R5
@@ -1528,7 +1526,7 @@ Wire Wire Line
 	3550 4950 3550 4900
 Wire Wire Line
 	3550 4700 3550 4650
-Text GLabel 2700 4950 3    50   Input ~ 0
+Text GLabel 5250 4950 3    50   Input ~ 0
 led_c1
 $Comp
 L Device:R_Small R3
@@ -1545,7 +1543,7 @@ Wire Wire Line
 	2700 4950 2700 4900
 Wire Wire Line
 	2700 4700 2700 4650
-Text GLabel 1850 4950 3    50   Input ~ 0
+Text GLabel 4450 4950 3    50   Input ~ 0
 led_c0
 $Comp
 L Device:R_Small R1
@@ -1714,7 +1712,6 @@ F 3 "" H 10200 2650 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Connection ~ 10200 2650
-NoConn ~ 7000 4700
 Text Label 8800 2800 0    50   ~ 0
 buzzer_drive
 Wire Wire Line
