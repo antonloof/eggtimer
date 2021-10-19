@@ -1422,7 +1422,6 @@ F 3 "~" H 8950 3150 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	9050 2950 9050 2800
-NoConn ~ 7250 5850
 $Comp
 L power:GND #PWR0114
 U 1 1 618C2494
