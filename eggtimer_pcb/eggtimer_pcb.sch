@@ -327,9 +327,9 @@ F 3 "" H 7600 5400 50  0001 C CNN
 	1    7600 5400
 	1    0    0    -1  
 $EndComp
-Text Label 7900 5000 0    50   ~ 0
-32k_xtal_out
 Text Label 7900 5100 0    50   ~ 0
+32k_xtal_out
+Text Label 7900 5000 0    50   ~ 0
 32k_xtal_in
 Text GLabel 9650 4300 2    50   Input ~ 0
 encoder_a
@@ -604,15 +604,15 @@ Wire Wire Line
 Wire Wire Line
 	8450 5100 7600 5100
 Connection ~ 7600 5100
-Text GLabel 9650 4850 2    50   Input ~ 0
+Text GLabel 8450 4350 0    50   Input ~ 0
 led_c0
 Text GLabel 8450 4050 0    50   Input ~ 0
 led_c5
-Text GLabel 8450 4150 0    50   Input ~ 0
+Text GLabel 8450 3950 0    50   Input ~ 0
 led_c4
-Text GLabel 8450 4250 0    50   Input ~ 0
+Text GLabel 9650 4950 2    50   Input ~ 0
 led_c3
-Text GLabel 8450 4350 0    50   Input ~ 0
+Text GLabel 9650 4850 2    50   Input ~ 0
 led_c2
 Text GLabel 8450 4450 0    50   Input ~ 0
 led_c1
@@ -954,12 +954,13 @@ Text GLabel 2800 1950 0    50   Input ~ 0
 led_a7
 Text GLabel 2800 1250 0    50   Input ~ 0
 led_a0
-Text GLabel 9650 4950 2    50   Input ~ 0
+Text GLabel 8450 4250 0    50   Input ~ 0
 led_c7
-Text GLabel 8450 3950 0    50   Input ~ 0
+Text GLabel 8450 4150 0    50   Input ~ 0
 led_c6
 Text GLabel 9650 3900 2    50   Input ~ 0
 led_a6
 Text GLabel 8450 5200 0    50   Input ~ 0
 led_a7
+NoConn ~ 8450 3750
 $EndSCHEMATC
